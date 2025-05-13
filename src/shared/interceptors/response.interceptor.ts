@@ -36,7 +36,7 @@ export class ResponseInterceptor<T>
 				}
 
 				return {
-					status:
+					message:
 						this.reflector.get<string>(
 							'status_message',
 							context.getHandler(),
