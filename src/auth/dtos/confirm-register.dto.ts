@@ -1,21 +1,15 @@
-import Joi from 'joi';
+import { IsEmail, IsString, Length } from 'class-validator';
 
 export class ConfirmRegisterRequestDto {
+	@IsEmail()
+	@IsString()
 	email: string;
+
+	@Length(6, 6)
+	@IsString()
 	verificationCode: string;
 }
-
-export const confirmRegisterRequestSchema =
-	Joi.object<ConfirmRegisterRequestDto>({
-		email: Joi.string().email().required(),
-		verificationCode: Joi.string().length(6).required(),
-	});
 
 export class ConfirmRegisterResponseDto {
 	accessToken: string;
 }
-
-export const confirmRegisterResponseDtoSchema =
-	Joi.object<ConfirmRegisterResponseDto>({
-		accessToken: Joi.string().required(),
-	});

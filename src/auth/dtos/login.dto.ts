@@ -1,19 +1,15 @@
-import Joi from 'joi';
+import { IsEmail, IsString, MinLength } from 'class-validator';
 
 export class LoginRequestDto {
+	@IsEmail()
+	@IsString()
 	email: string;
+
+	@MinLength(8)
+	@IsString()
 	password: string;
 }
-
-export const loginRequestDtoSchema = Joi.object<LoginRequestDto>({
-	email: Joi.string().email().required(),
-	password: Joi.string().min(8).required(),
-});
 
 export class LoginResponseDto {
 	accessToken: string;
 }
-
-export const loginResponseDtoSchema = Joi.object<LoginResponseDto>({
-	accessToken: Joi.string().required(),
-});

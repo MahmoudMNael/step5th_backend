@@ -10,22 +10,16 @@ import {
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { ResponseMessage } from 'src/shared/decorators/response_message.decorator';
-import { JoiValidatorPipe } from 'src/shared/pipes/joi-validator.pipe';
 import { ApiBadResponses } from 'src/shared/swagger/api-bad-responses.decorator';
 import { GenericResponseType } from 'src/shared/swagger/generic-response-type';
 import { AuthService } from './auth.service';
 import {
 	ConfirmRegisterRequestDto,
-	confirmRegisterRequestSchema,
 	ConfirmRegisterResponseDto,
 } from './dtos/confirm-register.dto';
-import {
-	LoginRequestDto,
-	loginRequestDtoSchema,
-	LoginResponseDto,
-} from './dtos/login.dto';
+import { LoginRequestDto, LoginResponseDto } from './dtos/login.dto';
 import { ProfileResponseDto } from './dtos/profile.dto';
-import { RegisterRequestDto, registerRequestSchema } from './dtos/register.dto';
+import { RegisterRequestDto } from './dtos/register.dto';
 import { JwtAuthGuard } from './guards/auth.guard';
 
 @Controller('auth')
@@ -33,8 +27,7 @@ export class AuthController {
 	constructor(private readonly authService: AuthService) {}
 
 	@ApiResponse({
-		status: HttpStatus.CREATED,
-		type: GenericResponseType(),
+		status: HttpStatus.NO_CONTENT,
 	})
 	@ApiBadResponses([
 		{
@@ -47,12 +40,10 @@ export class AuthController {
 				'Conflict - user with that email already exists || Conflict - user already registered! Awaiting email confirmation.',
 		},
 	])
-	@HttpCode(HttpStatus.CREATED)
+	@HttpCode(HttpStatus.NO_CONTENT)
 	@ResponseMessage('User registered successfully! Awaiting email confirmation.')
 	@Post('register')
-	async register(
-		@Body(new JoiValidatorPipe(registerRequestSchema)) body: RegisterRequestDto,
-	) {
+	async register(@Body() body: RegisterRequestDto) {
 		body.email = body.email.toLowerCase();
 		await this.authService.register(body);
 	}
@@ -75,7 +66,7 @@ export class AuthController {
 	@ResponseMessage('User confirmed successfully!')
 	@Post('confirm-register')
 	async confirmRegister(
-		@Body(new JoiValidatorPipe(confirmRegisterRequestSchema))
+		@Body()
 		body: ConfirmRegisterRequestDto,
 	) {
 		return await this.authService.confirmRegistration(body);
@@ -99,9 +90,7 @@ export class AuthController {
 	@HttpCode(HttpStatus.OK)
 	@ResponseMessage('User logged in successfully!')
 	@Post('login')
-	async login(
-		@Body(new JoiValidatorPipe(loginRequestDtoSchema)) body: LoginRequestDto,
-	) {
+	async login(@Body() body: LoginRequestDto) {
 		body.email = body.email.toLowerCase();
 		return await this.authService.login(body);
 	}
