@@ -5,7 +5,6 @@ import {
 	HttpCode,
 	HttpStatus,
 	Post,
-	Request,
 	UseGuards,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
@@ -13,6 +12,7 @@ import { ResponseMessage } from 'src/shared/decorators/response_message.decorato
 import { ApiBadResponses } from 'src/shared/swagger/api-bad-responses.decorator';
 import { GenericResponseType } from 'src/shared/swagger/generic-response-type';
 import { AuthService } from './auth.service';
+import { RequestUser, User } from './decorators/user.decorator';
 import {
 	ConfirmRegisterRequestDto,
 	ConfirmRegisterResponseDto,
@@ -104,7 +104,7 @@ export class AuthController {
 	@UseGuards(JwtAuthGuard)
 	@ResponseMessage('User retrieved successfully!')
 	@Get('profile')
-	async getProfile(@Request() req) {
-		return this.authService.getProfile(req.user.userId);
+	async getProfile(@User() currentUser: RequestUser) {
+		return this.authService.getProfile(currentUser.id);
 	}
 }

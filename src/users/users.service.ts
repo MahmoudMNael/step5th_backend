@@ -17,4 +17,16 @@ export class UsersService {
 	async create(data: Prisma.UserCreateInput) {
 		return this.usersRepository.create(data);
 	}
+
+	async findAll(where?: Prisma.UserWhereInput) {
+		return this.usersRepository.findAll(where);
+	}
+
+	async update(id: string, data: Prisma.UserUpdateInput) {
+		return this.usersRepository.update({ id }, data);
+	}
+
+	async delete(id: string) {
+		return this.usersRepository.delete({ id });
+	}
 }

@@ -25,4 +25,23 @@ export class UsersRepository {
 			data,
 		});
 	}
+
+	async findAll(where?: Prisma.UserWhereInput) {
+		return prisma.user.findMany({
+			where,
+		});
+	}
+
+	async update(where: { id: string }, data: Prisma.UserUpdateInput) {
+		return prisma.user.update({
+			where,
+			data,
+		});
+	}
+
+	async delete(where: { id: string }) {
+		return prisma.user.delete({
+			where,
+		});
+	}
 }
