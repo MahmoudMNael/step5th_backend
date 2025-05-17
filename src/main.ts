@@ -1,6 +1,7 @@
 import { HttpStatus, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { ApiProperty, DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { Language } from '@prisma/client';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -25,6 +26,16 @@ async function bootstrap() {
 		.addServer(`http://localhost:${port}`)
 		.addBearerAuth()
 		.addSecurityRequirements('bearer')
+		.addGlobalParameters({
+			name: 'Accept-Language',
+			required: true,
+			schema: {
+				type: 'string',
+				enum: Object.values(Language),
+				example: Language.en,
+			},
+			in: 'header',
+		})
 		.addGlobalResponse({
 			status: HttpStatus.BAD_REQUEST,
 			description: 'Bad Request - invalid form input',

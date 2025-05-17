@@ -1,0 +1,23 @@
+model Category {
+  id                   Int                   @id @default(autoincrement())
+  name                 String                @unique
+  createdAt            DateTime              @default(now()) @map("created_at")
+  updatedAt            DateTime              @updatedAt @map("updated_at")
+  CategoryTranslations CategoryTranslation[]
+}
+
+enum Language {
+  en
+  ar
+}
+
+model CategoryTranslation {
+  categoryId Int      @map("category_id")
+  name       String   @unique
+  language   Language
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  Category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([categoryId, language])
+}
