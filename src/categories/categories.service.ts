@@ -25,6 +25,7 @@ export class CategoriesService {
 		return {
 			id: category.id,
 			name: category.CategoryTranslations[0].name,
+			planId: category.planId,
 			createdAt: category.createdAt,
 			updatedAt: category.updatedAt,
 		};
@@ -39,6 +40,7 @@ export class CategoriesService {
 			return {
 				id: category.id,
 				name: category.CategoryTranslations[0].name,
+				planId: category.planId,
 				createdAt: category.createdAt,
 				updatedAt: category.updatedAt,
 			};
@@ -46,9 +48,7 @@ export class CategoriesService {
 	}
 
 	async create(data: CreateCategoryRequestDto) {
-		return this.categoriesRepository.create({
-			name: data.name,
-		});
+		return this.categoriesRepository.create(data);
 	}
 
 	async delete(categoryId: number) {

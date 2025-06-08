@@ -1,9 +1,12 @@
 model Category {
   id                   Int                   @id @default(autoincrement())
   name                 String                @unique
+  planId               Int?                  @map("plan_id")
   createdAt            DateTime              @default(now()) @map("created_at")
   updatedAt            DateTime              @updatedAt @map("updated_at")
+  Plan                 Plan?                 @relation(fields: [planId], references: [id], onDelete: SetNull)
   CategoryTranslations CategoryTranslation[]
+  Articles             Article[]
 }
 
 enum Language {

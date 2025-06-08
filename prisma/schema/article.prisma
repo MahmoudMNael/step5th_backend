@@ -1,3 +1,22 @@
-// model Article {
+model Article {
+  id                  Int                  @id @default(autoincrement())
+  title               String
+  description         String
+  content             String
+  thumbnailId         Int?                 @map("thumbnail_id")
+  categoryId          Int                  @map("category_id")
+  authorId            String?              @map("author_id")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+  Thumbnail           File?                @relation(fields: [thumbnailId], references: [id], onDelete: SetNull)
+  Category            Category             @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  Author              User?                @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  ArticleAttachedUrls ArticleAttachedUrl[]
+}
 
-// }
+model ArticleAttachedUrl {
+  id        Int     @id @default(autoincrement())
+  articleId Int     @map("article_id")
+  url       String
+  Article   Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+}

@@ -1,11 +1,18 @@
 import { IsNumber, IsOptional, IsString, MinLength } from 'class-validator';
 
-export class UpdateCategoryRequestDto {
+export class CreatePlanRequestDto {
 	@MinLength(2)
 	@IsString()
 	name: string;
 
 	@IsOptional()
+	@IsString()
+	description?: string;
+
 	@IsNumber()
-	planId?: number;
+	price: number;
+
+	@IsOptional()
+	@IsNumber()
+	annualDiscount?: number;
 }

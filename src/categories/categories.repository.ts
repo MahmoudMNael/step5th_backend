@@ -35,9 +35,7 @@ export class CategoriesRepository {
 
 	async create(data: Prisma.CategoryCreateInput) {
 		return prisma.category.create({
-			data: {
-				name: data.name,
-			},
+			data,
 		});
 	}
 
