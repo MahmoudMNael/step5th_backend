@@ -22,6 +22,8 @@ model UserSubscription {
   expireAt     DateTime @map("expire_at")
   User         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   Plan         Plan?    @relation(fields: [planId], references: [id], onDelete: SetNull)
+
+  @@index([expireAt])
 }
 
 enum Role {
