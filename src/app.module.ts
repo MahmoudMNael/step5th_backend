@@ -15,6 +15,9 @@ import { PlansModule } from './plans/plans.module';
 import { NoOpLoader } from './shared/i18n/noop.loader';
 import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
 import { UsersModule } from './users/users.module';
+import { FilesModule } from './files/files.module';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { ArticlesModule } from './articles/articles.module';
 
 @Module({
 	imports: [
@@ -73,6 +76,9 @@ import { UsersModule } from './users/users.module';
 		UsersModule,
 		CategoriesModule,
 		PlansModule,
+		FilesModule,
+		SubscriptionsModule,
+		ArticlesModule,
 	],
 	controllers: [AppController],
 	providers: [
