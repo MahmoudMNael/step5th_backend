@@ -5,6 +5,7 @@ import { ROLES_KEY } from '../decorators/roles.decorator';
 export enum Role {
 	USER = 'USER',
 	ADMIN = 'ADMIN',
+	SUBSCRIBER = 'SUBSCRIBER',
 }
 
 @Injectable()
@@ -22,6 +23,6 @@ export class RolesGuard implements CanActivate {
 		}
 
 		const { user } = context.switchToHttp().getRequest();
-		return requiredRoles.includes(user.userRole);
+		return requiredRoles.includes(user.role);
 	}
 }

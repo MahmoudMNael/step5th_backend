@@ -1,17 +1,36 @@
 model User {
-  id          String   @id @default(cuid())
-  firstName   String   @map("first_name")
-  lastName    String   @map("last_name")
-  email       String   @unique
-  phoneNumber String?  @map("phone_number")
-  password    String
-  salt        String
-  role        Role     @default(USER)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id                  String             @id @default(cuid())
+  firstName           String             @map("first_name")
+  lastName            String             @map("last_name")
+  email               String             @unique
+  phoneNumber         String?            @map("phone_number")
+  password            String
+  salt                String
+  role                Role               @default(USER)
+  parentConnectionId  String?            @map("parent_connection_id")
+  createdAt           DateTime           @default(now()) @map("created_at")
+  updatedAt           DateTime           @updatedAt @map("updated_at")
+  ParentConnection    User?              @relation("UserConnection", fields: [parentConnectionId], references: [id], onDelete: SetNull)
+  ChildrenConnections User[]             @relation("UserConnection")
+  Articles            Article[]
+  UserSubscriptions   UserSubscription[]
+}
+
+model UserSubscription {
+  id           Int      @id @default(autoincrement())
+  userId       String   @map("user_id")
+  planId       Int?     @map("plan_id")
+  isActive     Boolean  @default(true) @map("is_active")
+  subscribedAt DateTime @default(now()) @map("subscribed_at")
+  expireAt     DateTime @map("expire_at")
+  User         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Plan         Plan?    @relation(fields: [planId], references: [id], onDelete: SetNull)
+
+  @@index([expireAt])
 }
 
 enum Role {
   ADMIN
   USER
+  SUBSCRIBER
 }

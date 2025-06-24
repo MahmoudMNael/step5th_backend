@@ -5,10 +5,19 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { Language } from '@prisma/client';
+import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ArticlesModule } from './articles/articles.module';
 import { AuthModule } from './auth/auth.module';
+import { CategoriesModule } from './categories/categories.module';
+import { FilesModule } from './files/files.module';
+import { PlansModule } from './plans/plans.module';
+import { ReferralsModule } from './referrals/referrals.module';
+import { NoOpLoader } from './shared/i18n/noop.loader';
 import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { UsersModule } from './users/users.module';
 
 @Module({
@@ -37,8 +46,41 @@ import { UsersModule } from './users/users.module';
 				},
 			},
 		}),
+		I18nModule.forRoot({
+			fallbackLanguage: Language.en,
+			loader: NoOpLoader,
+			loaderOptions: {
+				path: '',
+			},
+			resolvers: [
+				{
+					use: AcceptLanguageResolver,
+					options: {
+						matchType: 'strict',
+						validator: (lang: string) => {
+							return Object.values(Language).includes(lang as Language);
+						},
+					},
+				},
+				{
+					use: QueryResolver,
+					options: {
+						value: ['lang'],
+						validator: (lang: string) => {
+							return Object.values(Language).includes(lang as Language);
+						},
+					},
+				},
+			],
+		}),
 		AuthModule,
 		UsersModule,
+		CategoriesModule,
+		PlansModule,
+		FilesModule,
+		SubscriptionsModule,
+		ArticlesModule,
+		ReferralsModule,
 	],
 	controllers: [AppController],
 	providers: [
