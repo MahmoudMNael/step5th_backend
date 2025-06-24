@@ -1,0 +1,9 @@
+model RefferalMetaData {
+  id                   Int      @id @default(1)
+  numberOfLevels       Int      @map("number_of_levels")
+  firstLevelPercentage Float    @map("first_level_percentage")
+  midLevelsPercentage  Float    @map("mid_levels_percentage")
+  lastLevelPercentage  Float    @map("last_level_percentage")
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+}

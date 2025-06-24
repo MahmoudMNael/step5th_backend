@@ -9,15 +9,16 @@ import { Language } from '@prisma/client';
 import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ArticlesModule } from './articles/articles.module';
 import { AuthModule } from './auth/auth.module';
 import { CategoriesModule } from './categories/categories.module';
+import { FilesModule } from './files/files.module';
 import { PlansModule } from './plans/plans.module';
+import { ReferralsModule } from './referrals/referrals.module';
 import { NoOpLoader } from './shared/i18n/noop.loader';
 import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
-import { UsersModule } from './users/users.module';
-import { FilesModule } from './files/files.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
-import { ArticlesModule } from './articles/articles.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
 	imports: [
@@ -79,6 +80,7 @@ import { ArticlesModule } from './articles/articles.module';
 		FilesModule,
 		SubscriptionsModule,
 		ArticlesModule,
+		ReferralsModule,
 	],
 	controllers: [AppController],
 	providers: [
