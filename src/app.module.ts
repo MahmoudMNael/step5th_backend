@@ -19,6 +19,7 @@ import { NoOpLoader } from './shared/i18n/noop.loader';
 import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { UsersModule } from './users/users.module';
+import { ConnectionsModule } from './connections/connections.module';
 
 @Module({
 	imports: [
@@ -81,6 +82,7 @@ import { UsersModule } from './users/users.module';
 		SubscriptionsModule,
 		ArticlesModule,
 		ReferralsModule,
+		ConnectionsModule,
 	],
 	controllers: [AppController],
 	providers: [
