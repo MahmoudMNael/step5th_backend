@@ -25,7 +25,7 @@ async function bootstrap() {
 		.setVersion('1.0')
 		.addServer(`http://localhost:${port}`)
 		.addServer(`https://step5th.com/api`)
-		.addServer(`https://31.97.156.169/api`)
+		.addServer(`http://31.97.156.169:4000`)
 		.addBearerAuth()
 		.addSecurityRequirements('bearer')
 		.addGlobalParameters({
