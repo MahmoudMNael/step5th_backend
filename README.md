@@ -22,8 +22,8 @@
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
 ## Description
-
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- A Freelance project (currently working on)
+- The backend for [Step5th](https://dev.step5th.com), a subscription-based blogging system for financial topics.
 
 ## Project setup
 
