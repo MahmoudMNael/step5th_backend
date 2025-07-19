@@ -23,7 +23,7 @@
 
 ## Description
 - A Freelance project (currently working on)
-- The backend for [Step5th](https://dev.step5th.com), a subscription-based blogging system for financial topics.
+- The backend for [Step5th](https://dev.step5th.com/swagger/), a subscription-based blogging system for financial topics.
 
 ## Project setup
 
