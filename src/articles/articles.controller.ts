@@ -28,6 +28,7 @@ import {
 	CreateArticleRequestDto,
 	CreateArticleThumbnailDto,
 } from './dtos/create-article.dto';
+import { GetArticleDto } from './dtos/get-article.dto';
 import {
 	GetArticlePreviewDto,
 	GetArticlesPreviewRequestDto,
@@ -96,6 +97,22 @@ export class ArticlesController {
 		);
 
 		return articles;
+	}
+
+	@ApiResponse({
+		status: HttpStatus.OK,
+		type: GenericResponseType(GetArticleDto),
+	})
+	@ResponseMessage('Article retrieved successfully!')
+	@HttpCode(HttpStatus.OK)
+	@Get(':id')
+	async findOne(@Param('id') id: number, @User() user?: RequestUser) {
+		const article = await this.articlesService.findOne(
+			id,
+			user ? user.role : Role.USER,
+		);
+
+		return article;
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)

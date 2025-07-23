@@ -24,7 +24,7 @@ export class CategoriesService {
 
 		return {
 			id: category.id,
-			name: category.CategoryTranslations[0].name,
+			name: category.CategoryTranslations[0]?.name ?? category.name,
 			planId: category.planId,
 			createdAt: category.createdAt,
 			updatedAt: category.updatedAt,
@@ -39,7 +39,7 @@ export class CategoriesService {
 		return result.map((category) => {
 			return {
 				id: category.id,
-				name: category.CategoryTranslations[0].name,
+				name: category.CategoryTranslations[0]?.name ?? category.name,
 				planId: category.planId,
 				createdAt: category.createdAt,
 				updatedAt: category.updatedAt,

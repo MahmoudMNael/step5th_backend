@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+	ForbiddenException,
+	Injectable,
+	NotFoundException,
+} from '@nestjs/common';
 import { Role } from 'src/auth/guards/roles.guard';
 import { PaginationDto } from 'src/shared/dtos/pagination.dto';
 import prisma from 'src/shared/utils/prisma/client';
@@ -21,6 +25,45 @@ export class ArticlesService {
 				authorId: authorId || null,
 			},
 		});
+
+		return article;
+	}
+
+	async findOne(id: number, userRole: Role) {
+		const article = await prisma.article.findUnique({
+			where: { id },
+			select: {
+				id: true,
+				title: true,
+				description: true,
+				content: true,
+				updatedAt: true,
+				createdAt: true,
+				Category: {
+					select: {
+						id: true,
+						planId: true,
+					},
+				},
+				Thumbnail: {
+					select: {
+						id: true,
+						mime: true,
+						name: true,
+					},
+				},
+			},
+		});
+
+		if (!article) {
+			throw new NotFoundException(`Article with ID ${id} not found`);
+		}
+
+		if (userRole === 'USER' && article.Category.planId) {
+			throw new ForbiddenException(
+				`Article with ID ${id} is locked for users without a subscription`,
+			);
+		}
 
 		return article;
 	}

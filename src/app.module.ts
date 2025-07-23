@@ -12,6 +12,7 @@ import { AppService } from './app.service';
 import { ArticlesModule } from './articles/articles.module';
 import { AuthModule } from './auth/auth.module';
 import { CategoriesModule } from './categories/categories.module';
+import { ConnectionsModule } from './connections/connections.module';
 import { FilesModule } from './files/files.module';
 import { PlansModule } from './plans/plans.module';
 import { ReferralsModule } from './referrals/referrals.module';
@@ -19,7 +20,7 @@ import { NoOpLoader } from './shared/i18n/noop.loader';
 import { ResponseInterceptor } from './shared/interceptors/response.interceptor';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { UsersModule } from './users/users.module';
-import { ConnectionsModule } from './connections/connections.module';
+import { PaymobModule } from './paymob/paymob.module';
 
 @Module({
 	imports: [
@@ -83,6 +84,7 @@ import { ConnectionsModule } from './connections/connections.module';
 		ArticlesModule,
 		ReferralsModule,
 		ConnectionsModule,
+		PaymobModule,
 	],
 	controllers: [AppController],
 	providers: [
