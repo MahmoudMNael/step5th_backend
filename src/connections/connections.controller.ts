@@ -8,12 +8,12 @@ import {
 	UseGuards,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { RequestUser, User } from 'src/auth/decorators/user.decorator';
-import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
-import { Role, RolesGuard } from 'src/auth/guards/roles.guard';
-import { ResponseMessage } from 'src/shared/decorators/response_message.decorator';
-import { GenericResponseType } from 'src/shared/swagger/generic-response-type';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { RequestUser, User } from '../auth/decorators/user.decorator';
+import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { Role, RolesGuard } from '../auth/guards/roles.guard';
+import { ResponseMessage } from '../shared/decorators/response_message.decorator';
+import { GenericResponseType } from '../shared/swagger/generic-response-type';
 import { ConnectionsService } from './connections.service';
 import { CreateConnectionRequestDto } from './dtos/create-connection.dto';
 import { GetCodeDto } from './dtos/get-code.dto';

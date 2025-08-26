@@ -3,7 +3,7 @@ import {
 	Injectable,
 	NotFoundException,
 } from '@nestjs/common';
-import prisma from 'src/shared/utils/prisma/client';
+import prisma from '../shared/utils/prisma/client';
 import { CreatePlanRequestDto } from './dtos/create-plan.dto';
 
 @Injectable()

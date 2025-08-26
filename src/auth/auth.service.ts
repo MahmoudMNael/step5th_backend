@@ -10,7 +10,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { JwtService } from '@nestjs/jwt';
 import { Cache } from 'cache-manager';
 import * as crypto from 'node:crypto';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { ConfirmRegisterRequestDto } from './dtos/confirm-register.dto';
 import { LoginRequestDto } from './dtos/login.dto';
 import { UpdateProfileRequestDto } from './dtos/profile.dto';
@@ -174,6 +174,16 @@ export class AuthService {
 
 		if (!user) {
 			throw new NotFoundException('User not found!');
+		}
+
+		const cacheKey = `forget-password:${email}`;
+
+		const cachedData = await this.cacheManager.get<{
+			verificationCode: string;
+		}>(cacheKey);
+
+		if (cachedData) {
+			throw new ConflictException('Password reset request already exists!');
 		}
 
 		const verificationCode = Math.floor(

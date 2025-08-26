@@ -15,14 +15,14 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiResponse } from '@nestjs/swagger';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { RequestUser, User } from 'src/auth/decorators/user.decorator';
-import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
-import { Role, RolesGuard } from 'src/auth/guards/roles.guard';
-import { FilesService } from 'src/files/files.service';
-import { ResponseMessage } from 'src/shared/decorators/response_message.decorator';
-import { Pagination } from 'src/shared/models/generic-response.model';
-import { GenericResponseType } from 'src/shared/swagger/generic-response-type';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { RequestUser, User } from '../auth/decorators/user.decorator';
+import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { Role, RolesGuard } from '../auth/guards/roles.guard';
+import { FilesService } from '../files/files.service';
+import { ResponseMessage } from '../shared/decorators/response_message.decorator';
+import { Pagination } from '../shared/models/generic-response.model';
+import { GenericResponseType } from '../shared/swagger/generic-response-type';
 import { ArticlesService } from './articles.service';
 import {
 	CreateArticleRequestDto,

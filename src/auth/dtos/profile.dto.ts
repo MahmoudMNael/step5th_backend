@@ -1,9 +1,4 @@
-import {
-	IsOptional,
-	IsPhoneNumber,
-	IsString,
-	MinLength,
-} from 'class-validator';
+import { IsOptional, IsPhoneNumber, IsString } from 'class-validator';
 
 export class ProfileResponseDto {
 	id: string;
@@ -17,17 +12,14 @@ export class ProfileResponseDto {
 
 export class UpdateProfileRequestDto {
 	@IsOptional()
-	@MinLength(2)
 	@IsString()
 	firstName?: string;
 
 	@IsOptional()
-	@MinLength(2)
 	@IsString()
 	lastName?: string;
 
 	@IsOptional()
-	@MinLength(2)
 	@IsPhoneNumber()
 	phoneNumber?: string;
 }

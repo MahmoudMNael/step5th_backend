@@ -1,0 +1,21 @@
+model Order {
+  id           Int           @id
+  userId       String?       @map("user_id")
+  planId       Int?          @map("plan_id")
+  isAnnual     Boolean       @default(false) @map("is_annual")
+  price        Float
+  status       OrderStatus
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+  User         User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  Plan         Plan?         @relation(fields: [planId], references: [id], onDelete: SetNull)
+  Transactions Transaction[]
+
+  @@index([status])
+}
+
+enum OrderStatus {
+  pending
+  approved
+  failed
+}

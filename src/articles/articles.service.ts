@@ -3,10 +3,10 @@ import {
 	Injectable,
 	NotFoundException,
 } from '@nestjs/common';
-import { Role } from 'src/auth/guards/roles.guard';
-import { PaginationDto } from 'src/shared/dtos/pagination.dto';
-import prisma from 'src/shared/utils/prisma/client';
-import { getPaginationObject } from 'src/shared/utils/prisma/pagination-object';
+import { Role } from '../auth/guards/roles.guard';
+import { PaginationDto } from '../shared/dtos/pagination.dto';
+import prisma from '../shared/utils/prisma/client';
+import { getPaginationObject } from '../shared/utils/prisma/pagination-object';
 import {
 	CreateArticleRequestDto,
 	CreateArticleThumbnailDto,

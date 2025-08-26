@@ -8,8 +8,8 @@ import {
 } from '@nestjs/common';
 import { Cache } from 'cache-manager';
 import { customAlphabet } from 'nanoid';
-import { RequestUser } from 'src/auth/decorators/user.decorator';
-import prisma from 'src/shared/utils/prisma/client';
+import { RequestUser } from '../auth/decorators/user.decorator';
+import prisma from '../shared/utils/prisma/client';
 import { CreateConnectionRequestDto } from './dtos/create-connection.dto';
 
 @Injectable()

@@ -9,9 +9,9 @@ import {
 	UseGuards,
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
-import { ResponseMessage } from 'src/shared/decorators/response_message.decorator';
-import { ApiBadResponses } from 'src/shared/swagger/api-bad-responses.decorator';
-import { GenericResponseType } from 'src/shared/swagger/generic-response-type';
+import { ResponseMessage } from '../shared/decorators/response_message.decorator';
+import { ApiBadResponses } from '../shared/swagger/api-bad-responses.decorator';
+import { GenericResponseType } from '../shared/swagger/generic-response-type';
 import { AuthService } from './auth.service';
 import { RequestUser, User } from './decorators/user.decorator';
 import { ChangePasswordRequestDto } from './dtos/change-password.dto';
