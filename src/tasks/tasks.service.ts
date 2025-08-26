@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { OrderStatus } from '@prisma/client';
+import { OrderStatus, Role } from '@prisma/client';
 import prisma from '../shared/utils/prisma/client';
 
 @Injectable()
@@ -17,5 +17,35 @@ export class TasksService {
 				},
 			},
 		});
+	}
+
+	@Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+	async handleExpiredSubscriptions() {
+		const now = new Date();
+
+		const expiredSubscriptions = await prisma.userSubscription.findMany({
+			where: {
+				isActive: true,
+				expireAt: {
+					lte: now,
+				},
+			},
+		});
+
+		for (const subscription of expiredSubscriptions) {
+			prisma.userSubscription.update({
+				where: { id: subscription.id },
+				data: { isActive: false },
+			});
+
+			if (subscription.userId == null) continue;
+
+			prisma.user.update({
+				where: { id: subscription.userId },
+				data: {
+					role: Role.USER,
+				},
+			});
+		}
 	}
 }
