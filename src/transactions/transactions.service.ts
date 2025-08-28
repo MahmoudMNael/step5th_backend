@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Order, Prisma, TransactionType, User } from '@prisma/client';
 import { ReferralsService } from '../referrals/referrals.service';
@@ -15,20 +15,32 @@ export class TransactionsService {
 
 	async create(data: Prisma.TransactionCreateInput, userId: string) {
 		if (data.type == TransactionType.deducted) {
-			prisma.userWallet.upsert({
-				where: { userId },
-				update: { balance: { decrement: data.amount } },
-				create: { userId, balance: -data.amount },
-			});
+			prisma.userWallet
+				.upsert({
+					where: { userId },
+					update: { balance: { decrement: data.amount } },
+					create: { userId, balance: -data.amount },
+				})
+				.catch((error) => {
+					Logger.error(
+						`Failed to update wallet for user ${userId}: ${error.message}`,
+					);
+				});
 		} else if (
 			data.type == TransactionType.added ||
 			data.type == TransactionType.referred
 		) {
-			prisma.userWallet.upsert({
-				where: { userId },
-				update: { balance: { increment: data.amount } },
-				create: { userId, balance: data.amount },
-			});
+			prisma.userWallet
+				.upsert({
+					where: { userId },
+					update: { balance: { increment: data.amount } },
+					create: { userId, balance: data.amount },
+				})
+				.catch((error) => {
+					Logger.error(
+						`Failed to update wallet for user ${userId}: ${error.message}`,
+					);
+				});
 		}
 
 		return await prisma.transaction.create({ data });
@@ -78,6 +90,10 @@ export class TransactionsService {
 
 	async createReferralTransactions(userId: string, order: Order) {
 		const referralMetadata = await this.referralsService.getReferralMetadata();
+
+		if (!referralMetadata) {
+			throw new NotFoundException('Referral metadata not configured');
+		}
 
 		let currentLevelUser = (await prisma.user.findUnique({
 			where: { id: userId },

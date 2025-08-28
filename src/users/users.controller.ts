@@ -31,7 +31,7 @@ export class UsersController {
 	@Get('')
 	async getManyUsers(@Query() queries: GetUsersQueryDto) {
 		return await this.usersService.findMany(
-			{ userId: queries.userId },
+			{ id: queries.userId },
 			{ page: queries.page, limit: queries.limit },
 		);
 	}

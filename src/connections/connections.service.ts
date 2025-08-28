@@ -4,6 +4,7 @@ import {
 	Inject,
 	Injectable,
 	InternalServerErrorException,
+	Logger,
 	NotFoundException,
 } from '@nestjs/common';
 import { Cache } from 'cache-manager';
@@ -106,12 +107,20 @@ export class ConnectionsService {
 
 		const childId = await this.validateInviteCodeAndReturn(body.inviteCode);
 
-		prisma.user.update({
-			where: { id: childId },
-			data: {
-				parentConnectionId: currentUser.id,
-			},
-		});
+		Logger.log(`User ${currentUser.id} is adding connection to ${childId}`);
+
+		prisma.user
+			.update({
+				where: { id: childId },
+				data: {
+					parentConnectionId: currentUser.id,
+				},
+			})
+			.catch((error) => {
+				Logger.error(
+					`Failed to add connection from ${currentUser.id} to ${childId}: ${error.message}`,
+				);
+			});
 
 		this.cacheManager.del(`invite:${body.inviteCode}`);
 	}

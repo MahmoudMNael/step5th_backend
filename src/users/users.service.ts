@@ -25,12 +25,9 @@ export class UsersService {
 		return this.usersRepository.findAll(where);
 	}
 
-	async findMany(
-		filters: { userId?: string },
-		paginationQuery?: PaginationDto,
-	) {
+	async findMany(filters: { id?: string }, paginationQuery?: PaginationDto) {
 		let where = {};
-		if (filters.userId) {
+		if (filters.id) {
 			where = filters;
 		}
 		const paginationObject = paginationQuery

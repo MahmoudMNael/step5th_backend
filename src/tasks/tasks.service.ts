@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { OrderStatus, Role } from '@prisma/client';
 import prisma from '../shared/utils/prisma/client';
@@ -9,14 +9,20 @@ export class TasksService {
 	async deleteOverStayedPendingOrders() {
 		const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
-		prisma.order.deleteMany({
-			where: {
-				status: OrderStatus.pending,
-				createdAt: {
-					lte: oneDayAgo,
+		prisma.order
+			.deleteMany({
+				where: {
+					status: OrderStatus.pending,
+					createdAt: {
+						lte: oneDayAgo,
+					},
 				},
-			},
-		});
+			})
+			.catch((error) => {
+				Logger.error(
+					`Failed to delete over-stayed pending orders: ${error.message}`,
+				);
+			});
 	}
 
 	@Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
@@ -33,19 +39,31 @@ export class TasksService {
 		});
 
 		for (const subscription of expiredSubscriptions) {
-			prisma.userSubscription.update({
-				where: { id: subscription.id },
-				data: { isActive: false },
-			});
+			prisma.userSubscription
+				.update({
+					where: { id: subscription.id },
+					data: { isActive: false },
+				})
+				.catch((error) => {
+					Logger.error(
+						`Failed to deactivate subscription ${subscription.id}: ${error.message}`,
+					);
+				});
 
 			if (subscription.userId == null) continue;
 
-			prisma.user.update({
-				where: { id: subscription.userId },
-				data: {
-					role: Role.USER,
-				},
-			});
+			prisma.user
+				.update({
+					where: { id: subscription.userId },
+					data: {
+						role: Role.USER,
+					},
+				})
+				.catch((error) => {
+					Logger.error(
+						`Failed to update role for user ${subscription.userId}: ${error.message}`,
+					);
+				});
 		}
 	}
 }
