@@ -109,6 +109,20 @@ export class ConnectionsService {
 
 		Logger.log(`User ${currentUser.id} is adding connection to ${childId}`);
 
+		const parent = await prisma.user.findUnique({
+			where: { id: currentUser.id },
+		});
+
+		if (parent!.parentConnectionId == childId) {
+			throw new ConflictException(
+				`User can't add their parent as a connection.`,
+			);
+		}
+
+		if (parent!.id == childId) {
+			throw new ConflictException(`User can't add themselves as a connection.`);
+		}
+
 		prisma.user
 			.update({
 				where: { id: childId },
@@ -125,6 +139,29 @@ export class ConnectionsService {
 		this.cacheManager.del(`invite:${body.inviteCode}`);
 	}
 
+	async deleteConnection(parentId: string, childId: string) {
+		const child = await prisma.user.findUnique({
+			where: { id: childId },
+		});
+
+		if (!child) {
+			throw new NotFoundException('Child user not found.');
+		}
+
+		if (child.parentConnectionId !== parentId) {
+			throw new ConflictException(
+				'This child is not connected to the current user.',
+			);
+		}
+
+		await prisma.user.update({
+			where: { id: childId },
+			data: {
+				parentConnectionId: null,
+			},
+		});
+	}
+
 	async getAllConnections(userId: string) {
 		const connections = await prisma.user.findUnique({
 			where: { id: userId },
@@ -137,6 +174,21 @@ export class ConnectionsService {
 						email: true,
 						phoneNumber: true,
 						role: true,
+						UserWallets: {
+							select: {
+								balance: true,
+							},
+						},
+						ChildrenConnections: {
+							select: {
+								id: true,
+								firstName: true,
+								lastName: true,
+								email: true,
+								phoneNumber: true,
+								role: true,
+							},
+						},
 					},
 				},
 			},

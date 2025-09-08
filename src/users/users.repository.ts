@@ -10,6 +10,26 @@ export class UsersRepository {
 		});
 	}
 
+	async findOneIncludeWalletAndPlan(where: { email?: string; id?: string }) {
+		return prisma.user.findFirst({
+			where,
+			include: {
+				UserWallets: true,
+				UserSubscriptions: {
+					select: {
+						planId: true,
+						subscribedAt: true,
+						expireAt: true,
+					},
+					where: {
+						isActive: true,
+					},
+					take: 1,
+				},
+			},
+		});
+	}
+
 	async findOneWithPassword(where: { email?: string; id?: string }) {
 		return prisma.user.findFirst({
 			where,

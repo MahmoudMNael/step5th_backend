@@ -95,7 +95,7 @@ export class SubscriptionsService {
 					isActive: true,
 					subscribedAt: order.updatedAt,
 					expireAt: new Date(
-						new Date(order.updatedAt).getDate() + (order.isAnnual ? 365 : 30),
+						new Date(order.updatedAt).getTime() + (order.isAnnual ? 365 : 30),
 					),
 				},
 			})

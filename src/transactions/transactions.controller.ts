@@ -40,7 +40,7 @@ export class TransactionsController {
 
 	@ApiResponse({
 		status: HttpStatus.CREATED,
-		type: GenericResponseType(GetTransactionResponseDto, undefined, true),
+		type: GenericResponseType(GetTransactionResponseDto, undefined, false),
 	})
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(Role.ADMIN)

@@ -107,6 +107,18 @@ export class AuthController {
 
 	@ApiResponse({
 		status: HttpStatus.OK,
+		type: GenericResponseType(LoginResponseDto),
+	})
+	@HttpCode(HttpStatus.OK)
+	@UseGuards(JwtAuthGuard)
+	@ResponseMessage('Token refreshed successfully!')
+	@Post('refresh')
+	async refreshToken(@User() currentUser: RequestUser) {
+		return await this.authService.refreshToken(currentUser.id);
+	}
+
+	@ApiResponse({
+		status: HttpStatus.OK,
 		type: GenericResponseType(ProfileResponseDto),
 	})
 	@ApiBadResponses([{ statusCode: HttpStatus.UNAUTHORIZED }])

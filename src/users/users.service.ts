@@ -13,6 +13,10 @@ export class UsersService {
 		return this.usersRepository.findOne(where);
 	}
 
+	async findOneIncludeWalletAndPlan(where: { email?: string; id?: string }) {
+		return this.usersRepository.findOneIncludeWalletAndPlan(where);
+	}
+
 	async findOneWithPassword(where: { email?: string; id?: string }) {
 		return this.usersRepository.findOneWithPassword(where);
 	}

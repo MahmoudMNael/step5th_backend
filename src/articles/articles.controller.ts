@@ -83,6 +83,7 @@ export class ArticlesController {
 		isArray: true,
 	})
 	@ResponseMessage('Articles retrieved successfully!')
+	@UseGuards(JwtAuthGuard)
 	@HttpCode(HttpStatus.OK)
 	@Get('')
 	async findAll(
@@ -91,6 +92,27 @@ export class ArticlesController {
 	) {
 		const articles = await this.articlesService.findAllPreviews(
 			user ? user.role : Role.USER,
+			user ? user.id : undefined,
+			query.categoryId,
+			query.search,
+			{ page: query.page, limit: query.limit },
+		);
+
+		return articles;
+	}
+
+	@ApiResponse({
+		status: HttpStatus.OK,
+		type: GenericResponseType(GetArticlePreviewDto, Pagination, true),
+		isArray: true,
+	})
+	@ResponseMessage('Articles retrieved successfully!')
+	@HttpCode(HttpStatus.OK)
+	@Get('unauthorized')
+	async findAllWhileUnauthorized(@Query() query: GetArticlesPreviewRequestDto) {
+		const articles = await this.articlesService.findAllPreviews(
+			Role.USER,
+			undefined,
 			query.categoryId,
 			query.search,
 			{ page: query.page, limit: query.limit },

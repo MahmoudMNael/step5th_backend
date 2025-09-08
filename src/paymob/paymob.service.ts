@@ -35,14 +35,14 @@ export class PaymobService {
 							first_name: orderData.firstName,
 							last_name: orderData.lastName,
 							email: orderData.email,
-							phone_number: orderData.phoneNumber,
+							phone_number: orderData.phoneNumber ?? '+201010101010',
 						},
 						customer: {
 							user_id: orderData.userId,
 							first_name: orderData.firstName,
 							last_name: orderData.lastName,
 							email: orderData.email,
-							phone_number: orderData.phoneNumber,
+							phone_number: orderData.phoneNumber ?? '+201010101010',
 						},
 					},
 					{

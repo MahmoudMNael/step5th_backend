@@ -146,6 +146,18 @@ export class AuthService {
 	}
 	//#endregion
 
+	async refreshToken(userId: string) {
+		const user = await this.usersService.findOne({ id: userId });
+
+		return {
+			accessToken: this.signJwt({
+				sub: user!.id,
+				email: user!.email,
+				role: user!.role,
+			}),
+		};
+	}
+
 	//#region passwords
 	private isSamePassword(
 		password: string,
@@ -286,7 +298,7 @@ export class AuthService {
 	}
 
 	async getProfile(id: string) {
-		const user = await this.usersService.findOne({ id });
+		const user = await this.usersService.findOneIncludeWalletAndPlan({ id });
 
 		if (!user) {
 			throw new NotFoundException('User not found!');

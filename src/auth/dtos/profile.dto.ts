@@ -8,6 +8,12 @@ export class ProfileResponseDto {
 	email: string;
 	createdAt: Date;
 	updatedAt: Date;
+	UserWallets: { balance: number; updatedAt: Date }[];
+	UserSubscriptions: {
+		planId: number | null;
+		subscribedAt: Date;
+		expireAt: Date;
+	}[];
 }
 
 export class UpdateProfileRequestDto {

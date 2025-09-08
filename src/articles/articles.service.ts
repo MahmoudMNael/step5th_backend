@@ -70,6 +70,7 @@ export class ArticlesService {
 
 	async findAllPreviews(
 		userRole: Role,
+		userId?: string,
 		categoryId?: number,
 		search?: string,
 		paginationQuery?: PaginationDto,
@@ -161,12 +162,21 @@ export class ArticlesService {
 				});
 		}
 
+		let userSub = await prisma.userSubscription.findFirst({
+			where: { userId, isActive: true },
+		});
+
 		const result = prioritizedArticles.map(
 			({ content, priority, Category, ...rest }) => {
 				let isLocked = false;
-				if (userRole === 'USER' && Category.planId) {
+				if (userRole == Role.USER && Category.planId) {
 					isLocked = true;
 				}
+
+				if (userId && Category.planId && userSub?.planId != Category.planId) {
+					isLocked = true;
+				}
+
 				return {
 					...rest,
 					Category,
