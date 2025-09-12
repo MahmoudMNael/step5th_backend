@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { RequestUser, User } from '../auth/decorators/user.decorator';
 import { JwtAuthGuard } from '../auth/guards/auth.guard';
 import { Role, RolesGuard } from '../auth/guards/roles.guard';
 import { Pagination } from '../shared/models/generic-response.model';
@@ -45,5 +46,15 @@ export class UsersController {
 	@Delete(':userId')
 	async delete(@Param('userId') userId: string) {
 		this.usersService.delete(userId);
+	}
+
+	@ApiResponse({
+		status: HttpStatus.NO_CONTENT,
+	})
+	@UseGuards(JwtAuthGuard)
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@Delete('')
+	async deleteSelf(@User() user: RequestUser) {
+		this.usersService.delete(user.id);
 	}
 }
