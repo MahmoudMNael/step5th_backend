@@ -125,14 +125,28 @@ export class ArticlesController {
 		status: HttpStatus.OK,
 		type: GenericResponseType(GetArticleDto),
 	})
+	@UseGuards(JwtAuthGuard)
 	@ResponseMessage('Article retrieved successfully!')
 	@HttpCode(HttpStatus.OK)
 	@Get(':id')
-	async findOne(@Param('id') id: number, @User() user?: RequestUser) {
+	async findOne(@Param('id') id: number, @User() user: RequestUser) {
 		const article = await this.articlesService.findOne(
 			id,
 			user ? user.role : Role.USER,
 		);
+
+		return article;
+	}
+
+	@ApiResponse({
+		status: HttpStatus.OK,
+		type: GenericResponseType(GetArticleDto),
+	})
+	@ResponseMessage('Article retrieved successfully!')
+	@HttpCode(HttpStatus.OK)
+	@Get(':id')
+	async findOneWhileUnauthorized(@Param('id') id: number) {
+		const article = await this.articlesService.findOne(id, Role.USER);
 
 		return article;
 	}

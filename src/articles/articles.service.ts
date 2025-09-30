@@ -59,7 +59,7 @@ export class ArticlesService {
 			throw new NotFoundException(`Article with ID ${id} not found`);
 		}
 
-		if (userRole === 'USER' && article.Category.planId) {
+		if (userRole === Role.USER && article.Category.planId) {
 			throw new ForbiddenException(
 				`Article with ID ${id} is locked for users without a subscription`,
 			);
@@ -175,6 +175,10 @@ export class ArticlesService {
 
 				if (userId && Category.planId && userSub?.planId != Category.planId) {
 					isLocked = true;
+				}
+
+				if (userRole == Role.ADMIN) {
+					isLocked = false;
 				}
 
 				return {

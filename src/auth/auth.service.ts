@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { JwtService } from '@nestjs/jwt';
+import { Role } from '@prisma/client';
 import { Cache } from 'cache-manager';
 import * as crypto from 'node:crypto';
 import { UsersService } from '../users/users.service';
@@ -103,6 +104,26 @@ export class AuthService {
 		};
 	}
 	//#endregion
+
+	async createAdmin(registerDto: RegisterRequestDto) {
+		const user = await this.usersService.findOne({ email: registerDto.email });
+		if (user) {
+			throw new ConflictException('User with that email already exists!');
+		}
+
+		const generatedSalt = this.generateSalt();
+		const hashedPassword = this.hashPassword(
+			registerDto.password,
+			generatedSalt,
+		);
+
+		return await this.usersService.create({
+			...registerDto,
+			password: hashedPassword,
+			salt: generatedSalt,
+			role: Role.ADMIN,
+		});
+	}
 
 	//#region Login
 	signJwt(payload: { sub: string; email: string; role: string }) {
