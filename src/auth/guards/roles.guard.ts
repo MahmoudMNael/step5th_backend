@@ -6,6 +6,7 @@ export enum Role {
 	USER = 'USER',
 	ADMIN = 'ADMIN',
 	SUBSCRIBER = 'SUBSCRIBER',
+	STAFF = 'STAFF',
 }
 
 @Injectable()

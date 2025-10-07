@@ -12,11 +12,12 @@ model User {
   updatedAt           DateTime           @updatedAt @map("updated_at")
   ParentConnection    User?              @relation("UserConnection", fields: [parentConnectionId], references: [id], onDelete: SetNull)
   ChildrenConnections User[]             @relation("UserConnection")
-  Articles            Article[]
   UserSubscriptions   UserSubscription[]
   Orders              Order[]
   Transactions        Transaction[]
   UserWallets         UserWallet[]
+  Article             Article[]
+  UpdatedArticles     Article[]          @relation("ArticleUpdatedBy")
 }
 
 model UserSubscription {
@@ -43,4 +44,5 @@ enum Role {
   ADMIN
   USER
   SUBSCRIBER
+  STAFF
 }

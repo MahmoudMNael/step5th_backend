@@ -199,7 +199,7 @@ export class ArticlesService {
 		};
 	}
 
-	async update(id: number, body: CreateArticleRequestDto) {
+	async update(id: number, body: CreateArticleRequestDto, userId: string) {
 		const existingArticle = await prisma.article.findUnique({
 			where: { id },
 		});
@@ -212,6 +212,7 @@ export class ArticlesService {
 			where: { id },
 			data: {
 				...body,
+				updatedById: userId,
 			},
 		});
 	}
