@@ -13,6 +13,7 @@ import { ResponseMessage } from '../shared/decorators/response_message.decorator
 import { ApiBadResponses } from '../shared/swagger/api-bad-responses.decorator';
 import { GenericResponseType } from '../shared/swagger/generic-response-type';
 import { AuthService } from './auth.service';
+import { Roles } from './decorators/roles.decorator';
 import { RequestUser, User } from './decorators/user.decorator';
 import { ChangePasswordRequestDto } from './dtos/change-password.dto';
 import {
@@ -31,6 +32,7 @@ import {
 } from './dtos/profile.dto';
 import { RegisterRequestDto } from './dtos/register.dto';
 import { JwtAuthGuard } from './guards/auth.guard';
+import { Role, RolesGuard } from './guards/roles.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -73,6 +75,8 @@ export class AuthController {
 				'Conflict - user with that email already exists || Conflict - user already registered! Awaiting email confirmation.',
 		},
 	])
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(Role.ADMIN)
 	@HttpCode(HttpStatus.CREATED)
 	@ResponseMessage('User registered successfully!')
 	@Post('register/admin')
