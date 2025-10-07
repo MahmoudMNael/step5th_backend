@@ -8,4 +8,5 @@ model Plan {
   updatedAt         DateTime           @updatedAt @map("updated_at")
   Categories        Category[]
   UserSubscriptions UserSubscription[]
+  Orders            Order[]
 }

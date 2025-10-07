@@ -1,3 +1,4 @@
+import { Type } from 'class-transformer';
 import { IsNumber, IsString, MinLength } from 'class-validator';
 
 export class CreateArticleRequestDto {
@@ -13,6 +14,7 @@ export class CreateArticleRequestDto {
 	@IsString()
 	content: string;
 
+	@Type(() => Number)
 	@IsNumber()
 	categoryId: number;
 }

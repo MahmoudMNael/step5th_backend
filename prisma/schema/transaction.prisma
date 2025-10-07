@@ -1,0 +1,17 @@
+model Transaction {
+  id          Int             @id @default(autoincrement())
+  orderId     Int?            @map("order_id")
+  amount      Float
+  recipientId String?         @map("recipient_id")
+  createdAt   DateTime        @default(now()) @map("created_at")
+  type        TransactionType
+  Order       Order?          @relation(fields: [orderId], references: [id])
+  Recipient   User?           @relation(fields: [recipientId], references: [id], onDelete: SetNull)
+}
+
+enum TransactionType {
+  order
+  referred
+  deducted
+  added
+}

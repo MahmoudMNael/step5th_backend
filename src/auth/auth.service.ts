@@ -8,11 +8,13 @@ import {
 } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { JwtService } from '@nestjs/jwt';
+import { Role } from '@prisma/client';
 import { Cache } from 'cache-manager';
 import * as crypto from 'node:crypto';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { ConfirmRegisterRequestDto } from './dtos/confirm-register.dto';
 import { LoginRequestDto } from './dtos/login.dto';
+import { UpdateProfileRequestDto } from './dtos/profile.dto';
 import { RegisterRequestDto } from './dtos/register.dto';
 
 @Injectable()
@@ -103,6 +105,26 @@ export class AuthService {
 	}
 	//#endregion
 
+	async createAdmin(registerDto: RegisterRequestDto) {
+		const user = await this.usersService.findOne({ email: registerDto.email });
+		if (user) {
+			throw new ConflictException('User with that email already exists!');
+		}
+
+		const generatedSalt = this.generateSalt();
+		const hashedPassword = this.hashPassword(
+			registerDto.password,
+			generatedSalt,
+		);
+
+		return await this.usersService.create({
+			...registerDto,
+			password: hashedPassword,
+			salt: generatedSalt,
+			role: Role.ADMIN,
+		});
+	}
+
 	//#region Login
 	signJwt(payload: { sub: string; email: string; role: string }) {
 		const jwt = this.jwtService.sign(payload);
@@ -145,6 +167,18 @@ export class AuthService {
 	}
 	//#endregion
 
+	async refreshToken(userId: string) {
+		const user = await this.usersService.findOne({ id: userId });
+
+		return {
+			accessToken: this.signJwt({
+				sub: user!.id,
+				email: user!.email,
+				role: user!.role,
+			}),
+		};
+	}
+
 	//#region passwords
 	private isSamePassword(
 		password: string,
@@ -167,13 +201,142 @@ export class AuthService {
 	}
 	//#endregion
 
+	//#region ForgetPassword
+	async requestPasswordReset(email: string) {
+		const user = await this.usersService.findOne({ email });
+
+		if (!user) {
+			throw new NotFoundException('User not found!');
+		}
+
+		const cacheKey = `forget-password:${email}`;
+
+		const cachedData = await this.cacheManager.get<{
+			verificationCode: string;
+		}>(cacheKey);
+
+		if (cachedData) {
+			throw new ConflictException('Password reset request already exists!');
+		}
+
+		const verificationCode = Math.floor(
+			100000 + Math.random() * 900000,
+		).toString();
+
+		await this.cacheManager.set(
+			`forget-password:${email}`,
+			{ verificationCode },
+			10 * 60 * 1000,
+		);
+
+		this.eventEmitter.emit('user.forget-password', {
+			email,
+			verificationCode,
+		});
+	}
+
+	async confirmPasswordReset(email: string, verificationCode: string) {
+		const cacheKey = `forget-password:${email}`;
+
+		const cachedData = await this.cacheManager.get<{
+			verificationCode: string;
+		}>(cacheKey);
+
+		if (!cachedData) {
+			throw new NotFoundException('Expired verification code!');
+		}
+
+		if (cachedData.verificationCode !== verificationCode) {
+			throw new UnauthorizedException('Invalid verification code!');
+		}
+
+		const user = await this.usersService.findOne({ email });
+
+		if (!user) {
+			throw new NotFoundException('User not found!');
+		}
+
+		await this.cacheManager.del(cacheKey);
+
+		await this.cacheManager.set(
+			`change-password:${email}`,
+			true,
+			10 * 60 * 1000,
+		);
+	}
+
+	async changeForgottenPassword(email: string, newPassword: string) {
+		const cacheKey = `change-password:${email}`;
+
+		const cachedData = await this.cacheManager.get<boolean>(cacheKey);
+
+		if (!cachedData) {
+			throw new NotFoundException('Password reset request expired!');
+		}
+
+		const user = await this.usersService.findOne({ email });
+
+		const generatedSalt = this.generateSalt();
+		const hashedPassword = this.hashPassword(newPassword, generatedSalt);
+
+		await this.usersService.update(user!.id, {
+			password: hashedPassword,
+			salt: generatedSalt,
+		});
+
+		await this.cacheManager.del(cacheKey);
+	}
+	//#endregion ForgetPassword
+
+	async changePassword(
+		email: string,
+		oldPassword: string,
+		newPassword: string,
+	) {
+		const user = await this.usersService.findOneWithPassword({ email });
+
+		if (!user) {
+			throw new NotFoundException('User not found!');
+		}
+
+		const isSamePassword = this.isSamePassword(
+			oldPassword,
+			user.password,
+			user.salt,
+		);
+
+		if (!isSamePassword) {
+			throw new UnauthorizedException('Invalid old password!');
+		}
+
+		const generatedSalt = this.generateSalt();
+		const hashedPassword = this.hashPassword(newPassword, generatedSalt);
+
+		await this.usersService.update(user!.id, {
+			password: hashedPassword,
+			salt: generatedSalt,
+		});
+	}
+
 	async getProfile(id: string) {
-		const user = await this.usersService.findOne({ id });
+		const user = await this.usersService.findOneIncludeWalletAndPlan({ id });
 
 		if (!user) {
 			throw new NotFoundException('User not found!');
 		}
 
 		return user;
+	}
+
+	async updateProfile(id: string, data: UpdateProfileRequestDto) {
+		const user = await this.usersService.findOne({ id });
+
+		if (!user) {
+			throw new NotFoundException('User not found!');
+		}
+
+		const updatedUser = await this.usersService.update(id, data);
+
+		return updatedUser;
 	}
 }

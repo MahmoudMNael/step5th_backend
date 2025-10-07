@@ -12,11 +12,11 @@ import {
 } from '@nestjs/common';
 import { ApiResponse } from '@nestjs/swagger';
 import { Response } from 'express';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
-import { Role, RolesGuard } from 'src/auth/guards/roles.guard';
-import { ResponseMessage } from 'src/shared/decorators/response_message.decorator';
-import { GenericResponseType } from 'src/shared/swagger/generic-response-type';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { Role, RolesGuard } from '../auth/guards/roles.guard';
+import { ResponseMessage } from '../shared/decorators/response_message.decorator';
+import { GenericResponseType } from '../shared/swagger/generic-response-type';
 import { CreatePlanRequestDto } from './dtos/create-plan.dto';
 import { PlanDto } from './dtos/plan.dto';
 import { PlansService } from './plans.service';

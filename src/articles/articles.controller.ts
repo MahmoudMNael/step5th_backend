@@ -15,19 +15,20 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiResponse } from '@nestjs/swagger';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { RequestUser, User } from 'src/auth/decorators/user.decorator';
-import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
-import { Role, RolesGuard } from 'src/auth/guards/roles.guard';
-import { FilesService } from 'src/files/files.service';
-import { ResponseMessage } from 'src/shared/decorators/response_message.decorator';
-import { Pagination } from 'src/shared/models/generic-response.model';
-import { GenericResponseType } from 'src/shared/swagger/generic-response-type';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { RequestUser, User } from '../auth/decorators/user.decorator';
+import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { Role, RolesGuard } from '../auth/guards/roles.guard';
+import { FilesService } from '../files/files.service';
+import { ResponseMessage } from '../shared/decorators/response_message.decorator';
+import { Pagination } from '../shared/models/generic-response.model';
+import { GenericResponseType } from '../shared/swagger/generic-response-type';
 import { ArticlesService } from './articles.service';
 import {
 	CreateArticleRequestDto,
 	CreateArticleThumbnailDto,
 } from './dtos/create-article.dto';
+import { GetArticleDto } from './dtos/get-article.dto';
 import {
 	GetArticlePreviewDto,
 	GetArticlesPreviewRequestDto,
@@ -82,6 +83,7 @@ export class ArticlesController {
 		isArray: true,
 	})
 	@ResponseMessage('Articles retrieved successfully!')
+	@UseGuards(JwtAuthGuard)
 	@HttpCode(HttpStatus.OK)
 	@Get('')
 	async findAll(
@@ -90,12 +92,63 @@ export class ArticlesController {
 	) {
 		const articles = await this.articlesService.findAllPreviews(
 			user ? user.role : Role.USER,
+			user ? user.id : undefined,
 			query.categoryId,
 			query.search,
 			{ page: query.page, limit: query.limit },
 		);
 
 		return articles;
+	}
+
+	@ApiResponse({
+		status: HttpStatus.OK,
+		type: GenericResponseType(GetArticlePreviewDto, Pagination, true),
+		isArray: true,
+	})
+	@ResponseMessage('Articles retrieved successfully!')
+	@HttpCode(HttpStatus.OK)
+	@Get('unauthorized')
+	async findAllWhileUnauthorized(@Query() query: GetArticlesPreviewRequestDto) {
+		const articles = await this.articlesService.findAllPreviews(
+			Role.USER,
+			undefined,
+			query.categoryId,
+			query.search,
+			{ page: query.page, limit: query.limit },
+		);
+
+		return articles;
+	}
+
+	@ApiResponse({
+		status: HttpStatus.OK,
+		type: GenericResponseType(GetArticleDto),
+	})
+	@UseGuards(JwtAuthGuard)
+	@ResponseMessage('Article retrieved successfully!')
+	@HttpCode(HttpStatus.OK)
+	@Get(':id')
+	async findOne(@Param('id') id: number, @User() user: RequestUser) {
+		const article = await this.articlesService.findOne(
+			id,
+			user ? user.role : Role.USER,
+		);
+
+		return article;
+	}
+
+	@ApiResponse({
+		status: HttpStatus.OK,
+		type: GenericResponseType(GetArticleDto),
+	})
+	@ResponseMessage('Article retrieved successfully!')
+	@HttpCode(HttpStatus.OK)
+	@Get(':id')
+	async findOneWhileUnauthorized(@Param('id') id: number) {
+		const article = await this.articlesService.findOne(id, Role.USER);
+
+		return article;
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)

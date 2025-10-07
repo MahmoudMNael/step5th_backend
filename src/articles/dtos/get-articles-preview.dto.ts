@@ -1,8 +1,10 @@
+import { Type } from 'class-transformer';
 import { IsNumber, IsOptional, IsString, MinLength } from 'class-validator';
-import { PaginationDto } from 'src/shared/dtos/pagination.dto';
+import { PaginationDto } from '../../shared/dtos/pagination.dto';
 
 export class GetArticlesPreviewRequestDto extends PaginationDto {
 	@IsOptional()
+	@Type(() => Number)
 	@IsNumber()
 	categoryId?: number;
 

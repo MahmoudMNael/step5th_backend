@@ -1,4 +1,4 @@
-import { PaginationDto } from 'src/shared/dtos/pagination.dto';
+import { PaginationDto } from '../../dtos/pagination.dto';
 
 export async function getPaginationObject(
 	module: any,

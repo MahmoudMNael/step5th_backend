@@ -1,8 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Role } from 'src/auth/guards/roles.guard';
-import { PaginationDto } from 'src/shared/dtos/pagination.dto';
-import prisma from 'src/shared/utils/prisma/client';
-import { getPaginationObject } from 'src/shared/utils/prisma/pagination-object';
+import {
+	ForbiddenException,
+	Injectable,
+	NotFoundException,
+} from '@nestjs/common';
+import { Role } from '../auth/guards/roles.guard';
+import { PaginationDto } from '../shared/dtos/pagination.dto';
+import prisma from '../shared/utils/prisma/client';
+import { getPaginationObject } from '../shared/utils/prisma/pagination-object';
 import {
 	CreateArticleRequestDto,
 	CreateArticleThumbnailDto,
@@ -25,8 +29,48 @@ export class ArticlesService {
 		return article;
 	}
 
+	async findOne(id: number, userRole: Role) {
+		const article = await prisma.article.findUnique({
+			where: { id },
+			select: {
+				id: true,
+				title: true,
+				description: true,
+				content: true,
+				updatedAt: true,
+				createdAt: true,
+				Category: {
+					select: {
+						id: true,
+						planId: true,
+					},
+				},
+				Thumbnail: {
+					select: {
+						id: true,
+						mime: true,
+						name: true,
+					},
+				},
+			},
+		});
+
+		if (!article) {
+			throw new NotFoundException(`Article with ID ${id} not found`);
+		}
+
+		if (userRole === Role.USER && article.Category.planId) {
+			throw new ForbiddenException(
+				`Article with ID ${id} is locked for users without a subscription`,
+			);
+		}
+
+		return article;
+	}
+
 	async findAllPreviews(
 		userRole: Role,
+		userId?: string,
 		categoryId?: number,
 		search?: string,
 		paginationQuery?: PaginationDto,
@@ -118,12 +162,25 @@ export class ArticlesService {
 				});
 		}
 
+		let userSub = await prisma.userSubscription.findFirst({
+			where: { userId, isActive: true },
+		});
+
 		const result = prioritizedArticles.map(
 			({ content, priority, Category, ...rest }) => {
 				let isLocked = false;
-				if (userRole === 'USER' && Category.planId) {
+				if (userRole == Role.USER && Category.planId) {
 					isLocked = true;
 				}
+
+				if (userId && Category.planId && userSub?.planId != Category.planId) {
+					isLocked = true;
+				}
+
+				if (userRole == Role.ADMIN) {
+					isLocked = false;
+				}
+
 				return {
 					...rest,
 					Category,

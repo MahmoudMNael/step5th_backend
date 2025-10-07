@@ -1,12 +1,32 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import prisma from 'src/shared/utils/prisma/client';
+import prisma from '../shared/utils/prisma/client';
 
 @Injectable()
 export class UsersRepository {
 	async findOne(where: { email?: string; id?: string }) {
 		return prisma.user.findFirst({
 			where,
+		});
+	}
+
+	async findOneIncludeWalletAndPlan(where: { email?: string; id?: string }) {
+		return prisma.user.findFirst({
+			where,
+			include: {
+				UserWallets: true,
+				UserSubscriptions: {
+					select: {
+						planId: true,
+						subscribedAt: true,
+						expireAt: true,
+					},
+					where: {
+						isActive: true,
+					},
+					take: 1,
+				},
+			},
 		});
 	}
 

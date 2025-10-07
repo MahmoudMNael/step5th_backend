@@ -14,19 +14,29 @@ model User {
   ChildrenConnections User[]             @relation("UserConnection")
   Articles            Article[]
   UserSubscriptions   UserSubscription[]
+  Orders              Order[]
+  Transactions        Transaction[]
+  UserWallets         UserWallet[]
 }
 
 model UserSubscription {
   id           Int      @id @default(autoincrement())
-  userId       String   @map("user_id")
+  userId       String?  @map("user_id")
   planId       Int?     @map("plan_id")
   isActive     Boolean  @default(true) @map("is_active")
   subscribedAt DateTime @default(now()) @map("subscribed_at")
   expireAt     DateTime @map("expire_at")
-  User         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
   Plan         Plan?    @relation(fields: [planId], references: [id], onDelete: SetNull)
 
   @@index([expireAt])
+}
+
+model UserWallet {
+  userId    String   @id @map("user_id")
+  balance   Float    @default(0.0)
+  updatedAt DateTime @updatedAt @map("updated_at")
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum Role {

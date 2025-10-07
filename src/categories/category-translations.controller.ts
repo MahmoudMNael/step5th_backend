@@ -13,11 +13,11 @@ import {
 import { ApiParam, ApiResponse } from '@nestjs/swagger';
 import { Language } from '@prisma/client';
 import { Response } from 'express';
-import { Roles } from 'src/auth/decorators/roles.decorator';
-import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
-import { Role, RolesGuard } from 'src/auth/guards/roles.guard';
-import { ResponseMessage } from 'src/shared/decorators/response_message.decorator';
-import { GenericResponseType } from 'src/shared/swagger/generic-response-type';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../auth/guards/auth.guard';
+import { Role, RolesGuard } from '../auth/guards/roles.guard';
+import { ResponseMessage } from '../shared/decorators/response_message.decorator';
+import { GenericResponseType } from '../shared/swagger/generic-response-type';
 import { CategoryTranslationsService } from './category-translations.service';
 import {
 	CategoryTranslationDto,
