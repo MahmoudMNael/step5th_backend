@@ -8,9 +8,11 @@ model Article {
   authorId            String?              @map("author_id")
   createdAt           DateTime             @default(now()) @map("created_at")
   updatedAt           DateTime             @updatedAt @map("updated_at")
+  updatedById         String?              @map("updated_by_id")
   Thumbnail           File?                @relation(fields: [thumbnailId], references: [id], onDelete: SetNull)
   Category            Category             @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   Author              User?                @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  UpdatedBy           User?                @relation("ArticleUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
   ArticleAttachedUrls ArticleAttachedUrl[]
 }
 

@@ -56,7 +56,7 @@ export class ArticlesController {
 		},
 	})
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(Role.ADMIN)
+	@Roles(Role.ADMIN, Role.STAFF)
 	@UseInterceptors(FileInterceptor('thumbnail'))
 	@ResponseMessage('Article created successfully!')
 	@HttpCode(HttpStatus.CREATED)
@@ -152,17 +152,21 @@ export class ArticlesController {
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(Role.ADMIN)
+	@Roles(Role.ADMIN, Role.STAFF)
 	@ResponseMessage('Article updated successfully!')
 	@HttpCode(HttpStatus.OK)
 	@Put(':id')
-	async update(@Param('id') id: number, @Body() body: CreateArticleRequestDto) {
-		const updatedArticle = await this.articlesService.update(id, body);
+	async update(
+		@Param('id') id: number,
+		@Body() body: CreateArticleRequestDto,
+		@User() user: RequestUser,
+	) {
+		const updatedArticle = await this.articlesService.update(id, body, user.id);
 		return updatedArticle;
 	}
 
 	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(Role.ADMIN)
+	@Roles(Role.ADMIN, Role.STAFF)
 	@ResponseMessage('Article deleted successfully!')
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@Delete(':id')
