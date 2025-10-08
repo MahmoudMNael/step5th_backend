@@ -18,6 +18,7 @@ model User {
   UserWallets         UserWallet[]
   Article             Article[]
   UpdatedArticles     Article[]          @relation("ArticleUpdatedBy")
+  CashoutRequests     CashoutRequest[]
 }
 
 model UserSubscription {

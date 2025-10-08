@@ -25,6 +25,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { UsersModule } from './users/users.module';
 import { OrdersModule } from './orders/orders.module';
+import { CashoutModule } from './cashout/cashout.module';
 
 @Module({
 	imports: [
@@ -84,6 +85,7 @@ import { OrdersModule } from './orders/orders.module';
 		TasksModule,
 		TransactionsModule,
 		OrdersModule,
+		CashoutModule,
 	],
 	controllers: [AppController],
 	providers: [
