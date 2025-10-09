@@ -1,0 +1,22 @@
+model CashoutRequest {
+  id        Int             @id @default(autoincrement())
+  userId    String          @map("user_id")
+  handle    String
+  notes     String?
+  status    CashoutStatus   @default(PENDING)
+  provider  CashoutProvider
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
+  User      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum CashoutStatus {
+  PENDING
+  RESOLVED
+  CANCELLED
+}
+
+enum CashoutProvider {
+  INSTAPAY
+  WALLET
+}

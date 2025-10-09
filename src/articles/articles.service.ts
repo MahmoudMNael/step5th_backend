@@ -39,6 +39,14 @@ export class ArticlesService {
 				content: true,
 				updatedAt: true,
 				createdAt: true,
+				UpdatedBy: {
+					select: {
+						id: true,
+						firstName: true,
+						lastName: true,
+						email: true,
+					},
+				},
 				Category: {
 					select: {
 						id: true,
@@ -101,6 +109,14 @@ export class ArticlesService {
 				content: true,
 				updatedAt: true,
 				createdAt: true,
+				UpdatedBy: {
+					select: {
+						id: true,
+						firstName: true,
+						lastName: true,
+						email: true,
+					},
+				},
 				Category: {
 					select: {
 						id: true,
@@ -130,6 +146,12 @@ export class ArticlesService {
 			content: string;
 			updatedAt: Date;
 			createdAt: Date;
+			UpdatedBy: {
+				id: string;
+				firstName: string;
+				lastName: string;
+				email: string;
+			} | null;
 			Category: {
 				id: number;
 				planId: number | null;
