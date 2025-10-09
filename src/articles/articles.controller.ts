@@ -144,7 +144,7 @@ export class ArticlesController {
 	})
 	@ResponseMessage('Article retrieved successfully!')
 	@HttpCode(HttpStatus.OK)
-	@Get(':id')
+	@Get(':id/unauthorized')
 	async findOneWhileUnauthorized(@Param('id') id: number) {
 		const article = await this.articlesService.findOne(id, Role.USER);
 

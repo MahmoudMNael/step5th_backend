@@ -5,6 +5,12 @@ export class GetArticleDto {
 	content: string;
 	updatedAt: Date;
 	createdAt: Date;
+	UpdatedBy: {
+		id: string;
+		firstName: string;
+		lastName: string;
+		email: string;
+	} | null;
 	Category: {
 		id: number;
 		planId: number | null;
