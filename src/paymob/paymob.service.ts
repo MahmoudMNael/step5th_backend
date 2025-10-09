@@ -15,6 +15,10 @@ export class PaymobService {
 		orderData: PaymentDataDto,
 		isAnnual: boolean,
 	): Promise<{ paymentUrl: string; orderId: number; amountCents: number }> {
+		const paymentIntegerations = JSON.parse(
+			process.env.PAYMOB_PAYMENT_INTEGERATION!,
+		) as number[];
+
 		return new Promise((resolve, reject) => {
 			this.httpService
 				.post(
@@ -22,7 +26,7 @@ export class PaymobService {
 					{
 						amount: orderData.priceCents,
 						currency: 'EGP',
-						payment_methods: [Number(process.env.PAYMOB_PAYMENT_INTEGERATION!)],
+						payment_methods: paymentIntegerations,
 						items: [
 							{
 								name: orderData.productName,
