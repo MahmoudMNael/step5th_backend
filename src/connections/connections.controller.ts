@@ -1,11 +1,9 @@
 import {
 	Body,
 	Controller,
-	Delete,
 	Get,
 	HttpCode,
 	HttpStatus,
-	Param,
 	Post,
 	UseGuards,
 } from '@nestjs/common';
@@ -81,20 +79,20 @@ export class ConnectionsController {
 		return connections;
 	}
 
-	@ApiResponse({
-		status: HttpStatus.NO_CONTENT,
-	})
-	@UseGuards(JwtAuthGuard, RolesGuard)
-	@Roles(Role.USER, Role.SUBSCRIBER)
-	@ResponseMessage('Connection removed successfully!')
-	@HttpCode(HttpStatus.NO_CONTENT)
-	@Delete(':childId')
-	async deleteConnection(
-		@Param('childId') childId: string,
-		@User() currentUser: RequestUser,
-	) {
-		await this.connectionsService.deleteConnection(currentUser.id, childId);
-	}
+	// @ApiResponse({
+	// 	status: HttpStatus.NO_CONTENT,
+	// })
+	// @UseGuards(JwtAuthGuard, RolesGuard)
+	// @Roles(Role.USER, Role.SUBSCRIBER)
+	// @ResponseMessage('Connection removed successfully!')
+	// @HttpCode(HttpStatus.NO_CONTENT)
+	// @Delete(':childId')
+	// async deleteConnection(
+	// 	@Param('childId') childId: string,
+	// 	@User() currentUser: RequestUser,
+	// ) {
+	// 	await this.connectionsService.deleteConnection(currentUser.id, childId);
+	// }
 
 	@ApiResponse({
 		status: HttpStatus.OK,
