@@ -4,13 +4,16 @@ import {
 	Injectable,
 	NotFoundException,
 } from '@nestjs/common';
-import { CashoutStatus, Prisma, Role } from '@prisma/client';
+import { CashoutStatus, Prisma, Role, TransactionType } from '@prisma/client';
 import prisma from '../shared/utils/prisma/client';
+import { TransactionsService } from '../transactions/transactions.service';
 import { CashoutStatusQueryDto } from './dtos/cashout-status.dto';
 import { CreateCashoutRequestDto } from './dtos/create-cashout.dto';
 
 @Injectable()
 export class CashoutService {
+	constructor(private readonly transactionsService: TransactionsService) {}
+
 	async create(body: CreateCashoutRequestDto, userId: string) {
 		const existingCashout = await prisma.cashoutRequest.findFirst({
 			where: {
@@ -115,6 +118,18 @@ export class CashoutService {
 		if (cashout.status !== CashoutStatus.PENDING) {
 			throw new ConflictException(
 				'Only pending cashout requests can be updated',
+			);
+		}
+
+		if (status == CashoutStatus.RESOLVED) {
+			const amount = await prisma.userWallet.findUnique({
+				where: { userId: cashout.userId },
+				select: { balance: true },
+			});
+
+			await this.transactionsService.create(
+				{ type: TransactionType.deducted, amount: amount?.balance || 0 },
+				cashout.userId,
 			);
 		}
 
