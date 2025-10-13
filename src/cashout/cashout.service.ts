@@ -19,6 +19,15 @@ export class CashoutService {
 			},
 		});
 
+		const userWallet = await prisma.userWallet.findUnique({
+			where: { userId },
+			select: { balance: true },
+		});
+
+		if (userWallet!.balance <= 0) {
+			throw new ConflictException('Insufficient balance for cashout request');
+		}
+
 		if (existingCashout) {
 			throw new ConflictException('You already have a pending cashout request');
 		}
