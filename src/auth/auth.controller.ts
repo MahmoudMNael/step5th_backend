@@ -82,7 +82,32 @@ export class AuthController {
 	@Post('register/admin')
 	async createAdmin(@Body() body: RegisterRequestDto) {
 		body.email = body.email.toLowerCase();
-		return await this.authService.createAdmin(body);
+		return await this.authService.createUserWithRole(body, Role.ADMIN);
+	}
+
+	@ApiResponse({
+		status: HttpStatus.CREATED,
+		type: GenericResponseType(ProfileResponseDto),
+	})
+	@ApiBadResponses([
+		{
+			statusCode: HttpStatus.NOT_FOUND,
+			errorDescription: 'Not Found - expired verification code',
+		},
+		{
+			statusCode: HttpStatus.CONFLICT,
+			errorDescription:
+				'Conflict - user with that email already exists || Conflict - user already registered! Awaiting email confirmation.',
+		},
+	])
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(Role.ADMIN)
+	@HttpCode(HttpStatus.CREATED)
+	@ResponseMessage('User registered successfully!')
+	@Post('register/staff')
+	async createStaff(@Body() body: RegisterRequestDto) {
+		body.email = body.email.toLowerCase();
+		return await this.authService.createUserWithRole(body, Role.STAFF);
 	}
 
 	@ApiResponse({
