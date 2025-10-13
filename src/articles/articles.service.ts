@@ -23,6 +23,7 @@ export class ArticlesService {
 				categoryId: body.categoryId,
 				thumbnailId: body.thumbnail?.id || null,
 				authorId: authorId || null,
+				updatedById: authorId || null,
 			},
 		});
 

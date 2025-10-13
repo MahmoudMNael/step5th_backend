@@ -105,7 +105,7 @@ export class AuthService {
 	}
 	//#endregion
 
-	async createAdmin(registerDto: RegisterRequestDto) {
+	async createUserWithRole(registerDto: RegisterRequestDto, role: Role) {
 		const user = await this.usersService.findOne({ email: registerDto.email });
 		if (user) {
 			throw new ConflictException('User with that email already exists!');
@@ -121,7 +121,7 @@ export class AuthService {
 			...registerDto,
 			password: hashedPassword,
 			salt: generatedSalt,
-			role: Role.ADMIN,
+			role,
 		});
 	}
 

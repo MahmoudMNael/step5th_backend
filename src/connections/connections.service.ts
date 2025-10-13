@@ -7,6 +7,7 @@ import {
 	Logger,
 	NotFoundException,
 } from '@nestjs/common';
+import { Role } from '@prisma/client';
 import { Cache } from 'cache-manager';
 import { customAlphabet } from 'nanoid';
 import { RequestUser } from '../auth/decorators/user.decorator';
@@ -85,11 +86,18 @@ export class ConnectionsService {
 			throw new NotFoundException('User not found.');
 		}
 
-		const maxConnections = user.role == 'USER' ? 5 : 7;
+		if (user.role !== Role.SUBSCRIBER) {
+			throw new ConflictException(
+				'Only users with SUBSCRIBER role can add connections.',
+			);
+		}
+
+		const maxConnections = 7;
 
 		if (user._count.ChildrenConnections >= maxConnections) {
 			return false;
 		}
+
 		return true;
 	}
 
@@ -106,6 +114,21 @@ export class ConnectionsService {
 		}
 
 		const childId = await this.validateInviteCodeAndReturn(body.inviteCode);
+
+		const childRole = await prisma.user.findUnique({
+			where: { id: childId },
+			select: { role: true },
+		});
+
+		const availableUnsubscribed = await this.countNonSubscribedChildConnections(
+			currentUser.id,
+		);
+
+		if (availableUnsubscribed >= 2 && childRole!.role == Role.USER) {
+			throw new ConflictException(
+				`User has reached the maximum number of non-subscriber child connections.`,
+			);
+		}
 
 		Logger.log(`User ${currentUser.id} is adding connection to ${childId}`);
 
@@ -139,28 +162,28 @@ export class ConnectionsService {
 		this.cacheManager.del(`invite:${body.inviteCode}`);
 	}
 
-	async deleteConnection(parentId: string, childId: string) {
-		const child = await prisma.user.findUnique({
-			where: { id: childId },
-		});
+	// async deleteConnection(parentId: string, childId: string) {
+	// 	const child = await prisma.user.findUnique({
+	// 		where: { id: childId },
+	// 	});
 
-		if (!child) {
-			throw new NotFoundException('Child user not found.');
-		}
+	// 	if (!child) {
+	// 		throw new NotFoundException('Child user not found.');
+	// 	}
 
-		if (child.parentConnectionId !== parentId) {
-			throw new ConflictException(
-				'This child is not connected to the current user.',
-			);
-		}
+	// 	if (child.parentConnectionId !== parentId) {
+	// 		throw new ConflictException(
+	// 			'This child is not connected to the current user.',
+	// 		);
+	// 	}
 
-		await prisma.user.update({
-			where: { id: childId },
-			data: {
-				parentConnectionId: null,
-			},
-		});
-	}
+	// 	await prisma.user.update({
+	// 		where: { id: childId },
+	// 		data: {
+	// 			parentConnectionId: null,
+	// 		},
+	// 	});
+	// }
 
 	async getAllConnections(userId: string) {
 		const connections = await prisma.user.findUnique({
@@ -223,5 +246,18 @@ export class ConnectionsService {
 		}
 
 		return user.ParentConnection;
+	}
+
+	private async countNonSubscribedChildConnections(userId: string) {
+		const count = await prisma.user.count({
+			where: {
+				parentConnectionId: userId,
+				role: {
+					not: Role.SUBSCRIBER,
+				},
+			},
+		});
+
+		return count;
 	}
 }
