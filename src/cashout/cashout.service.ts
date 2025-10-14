@@ -27,7 +27,7 @@ export class CashoutService {
 			select: { balance: true },
 		});
 
-		if (userWallet!.balance <= 0) {
+		if (!userWallet || userWallet.balance <= 0) {
 			throw new ConflictException('Insufficient balance for cashout request');
 		}
 
