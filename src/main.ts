@@ -1,13 +1,19 @@
 import { HttpStatus, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { ApiProperty, DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Language } from '@prisma/client';
+import { join } from 'path';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-	const app = await NestFactory.create(AppModule, {
+	const app = await NestFactory.create<NestExpressApplication>(AppModule, {
 		logger: ['error', 'warn', 'log', 'debug', 'verbose'],
 	});
+
+	// Configure view engine
+	app.setBaseViewsDir(join(__dirname, '..', 'views'));
+	app.setViewEngine('hbs');
 
 	app.enableCors();
 

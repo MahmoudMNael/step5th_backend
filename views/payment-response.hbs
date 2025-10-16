@@ -1,0 +1,51 @@
+<html lang='en'>
+	<head>
+		<meta charset='UTF-8' />
+		<meta name='viewport' content='width=device-width, initial-scale=1.0' />
+		<title>Payment {{status}}</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				max-width: 600px;
+				margin: 50px auto;
+				padding: 20px;
+				text-align: center;
+			}
+			.success {
+				color: #28a745;
+			}
+			.error {
+				color: #dc3545;
+			}
+			.card {
+				border: 1px solid #ddd;
+				border-radius: 8px;
+				padding: 30px;
+				background-color: #f9f9f9;
+			}
+			.btn {
+				background-color: #007bff;
+				color: white;
+				padding: 10px 20px;
+				text-decoration: none;
+				border-radius: 5px;
+				display: inline-block;
+				margin-top: 20px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class='card'>
+			{{#if success}}
+				<h1 class='success'>✅ Payment Successful!</h1>
+				<p>Thank you for your payment. Your transaction has been processed
+					successfully.</p>
+				<p><strong>Order ID:</strong> {{orderId}}</p>
+				<p><strong>Amount:</strong> {{amount}} {{currency}}</p>
+			{{else}}
+				<h1 class='error'>❌ Payment Failed</h1>
+				<p>Unfortunately, your payment could not be processed.</p>
+			{{/if}}
+		</div>
+	</body>
+</html>
