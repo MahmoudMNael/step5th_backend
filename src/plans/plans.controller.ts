@@ -1,6 +1,7 @@
 import {
 	Body,
 	Controller,
+	Delete,
 	Get,
 	HttpCode,
 	HttpStatus,
@@ -73,12 +74,24 @@ export class PlansController {
 	@UseGuards(JwtAuthGuard, RolesGuard)
 	@Roles(Role.ADMIN)
 	@HttpCode(HttpStatus.OK)
-	@ResponseMessage('Plan retrieved successfully!')
+	@ResponseMessage('Plan updated successfully!')
 	@Put(':planId')
 	async update(
 		@Param('planId') planId: number,
 		@Body() body: CreatePlanRequestDto,
 	) {
 		return await this.plansService.update(planId, body);
+	}
+
+	@ApiResponse({
+		status: HttpStatus.NO_CONTENT,
+	})
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(Role.ADMIN)
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ResponseMessage('Plan delete successfully!')
+	@Delete(':planId')
+	async delete(@Param('planId') planId: number) {
+		return await this.plansService.delete(planId);
 	}
 }

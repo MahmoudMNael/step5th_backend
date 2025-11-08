@@ -133,6 +133,7 @@ export class ArticlesController {
 		const article = await this.articlesService.findOne(
 			id,
 			user ? user.role : Role.USER,
+			user.id,
 		);
 
 		return article;

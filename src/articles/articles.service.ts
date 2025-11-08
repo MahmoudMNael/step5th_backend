@@ -30,7 +30,7 @@ export class ArticlesService {
 		return article;
 	}
 
-	async findOne(id: number, userRole: Role) {
+	async findOne(id: number, userRole: Role, userId?: string) {
 		const article = await prisma.article.findUnique({
 			where: { id },
 			select: {
@@ -64,11 +64,15 @@ export class ArticlesService {
 			},
 		});
 
+		let userSub = await prisma.userSubscription.findFirst({
+			where: { userId, isActive: true },
+		});
+
 		if (!article) {
 			throw new NotFoundException(`Article with ID ${id} not found`);
 		}
 
-		if (userRole === Role.USER && article.Category.planId) {
+		if (userRole === Role.USER && article.Category.planId != userSub?.planId) {
 			throw new ForbiddenException(
 				`Article with ID ${id} is locked for users without a subscription`,
 			);
