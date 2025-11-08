@@ -1,8 +1,4 @@
-import {
-	ConflictException,
-	Injectable,
-	NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import prisma from '../shared/utils/prisma/client';
 import { CreatePlanRequestDto } from './dtos/create-plan.dto';
 
@@ -13,14 +9,6 @@ export class PlansService {
 	}
 
 	async create(data: CreatePlanRequestDto) {
-		const existingPlan = await prisma.plan.findFirst();
-
-		if (existingPlan) {
-			throw new ConflictException(
-				`A plan already exists. Only one plan is allowed.`,
-			);
-		}
-
 		return prisma.plan.create({
 			data: {
 				name: data.name,
@@ -54,6 +42,19 @@ export class PlansService {
 				price: data.price,
 				annualDiscount: data.annualDiscount ?? undefined,
 			},
+		});
+	}
+
+	async delete(planId: number) {
+		const plan = await this.findOne(planId);
+
+		if (!plan || plan.isDisabled) {
+			throw new NotFoundException(`Plan not found`);
+		}
+
+		return prisma.plan.update({
+			where: { id: planId },
+			data: { isDisabled: true },
 		});
 	}
 }
