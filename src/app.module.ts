@@ -26,6 +26,7 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { TasksModule } from './tasks/tasks.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { UsersModule } from './users/users.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
 	imports: [
@@ -89,6 +90,7 @@ import { UsersModule } from './users/users.module';
 		TransactionsModule,
 		OrdersModule,
 		CashoutModule,
+		NotificationsModule,
 	],
 	controllers: [AppController],
 	providers: [
