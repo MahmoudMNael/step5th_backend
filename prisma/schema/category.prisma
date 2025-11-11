@@ -1,12 +1,13 @@
 model Category {
-  id                   Int                   @id @default(autoincrement())
-  name                 String                @unique
-  planId               Int?                  @map("plan_id")
-  createdAt            DateTime              @default(now()) @map("created_at")
-  updatedAt            DateTime              @updatedAt @map("updated_at")
-  Plan                 Plan?                 @relation(fields: [planId], references: [id], onDelete: SetNull)
-  CategoryTranslations CategoryTranslation[]
-  Articles             Article[]
+  id                               Int                                @id @default(autoincrement())
+  name                             String                             @unique
+  planId                           Int?                               @map("plan_id")
+  createdAt                        DateTime                           @default(now()) @map("created_at")
+  updatedAt                        DateTime                           @updatedAt @map("updated_at")
+  Plan                             Plan?                              @relation(fields: [planId], references: [id], onDelete: SetNull)
+  CategoryTranslations             CategoryTranslation[]
+  Articles                         Article[]
+  CategoryNotificationsSubscribers CategoryNotificationsSubscriber[]
 }
 
 enum Language {
@@ -23,4 +24,13 @@ model CategoryTranslation {
   Category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@id([categoryId, language])
+}
+
+model CategoryNotificationsSubscriber {
+  categoryId Int      @map("category_id")
+  userId     String   @map("user_id")
+  Category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  User       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([categoryId, userId])
 }
