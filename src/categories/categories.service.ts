@@ -129,5 +129,27 @@ export class CategoriesService {
 		});
 	}
 
+	async isSubscribed(categoryId: number, userId: string) {
+		const category = await this.categoriesRepository.findOne(categoryId);
+
+		if (!category) {
+			throw new NotFoundException('Category not found');
+		}
+
+		const existingSubscription =
+			await prisma.categoryNotificationsSubscriber.findFirst({
+				where: {
+					categoryId,
+					userId,
+				},
+			});
+
+		if (!existingSubscription) {
+			return false;
+		}
+
+		return true;
+	}
+
 	// async createTranslation(data: CreateCategoryTranslationRequestDto) {}
 }

@@ -28,6 +28,7 @@ import {
 	CreateCategoryResponseDto,
 } from './dtos/create-category.dto';
 import { GetOneCategoryResponseDto } from './dtos/getone-category.dto';
+import { IsSubscribedResponseDto } from './dtos/subscribed.dto';
 import { UpdateCategoryRequestDto } from './dtos/update-category.dto';
 
 @Controller('categories')
@@ -148,5 +149,26 @@ export class CategoriesController {
 		@User() user: RequestUser,
 	) {
 		await this.categoriesService.unsubscribe(categoryId, user.id);
+	}
+
+	@ApiResponse({
+		status: HttpStatus.OK,
+		type: GenericResponseType(IsSubscribedResponseDto),
+	})
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(Role.USER, Role.SUBSCRIBER)
+	@HttpCode(HttpStatus.OK)
+	@ResponseMessage('Category notifications unsubscribed successfully!')
+	@Get(':categoryId/issubscribed')
+	async isSubscribed(
+		@Param('categoryId') categoryId: number,
+		@User() user: RequestUser,
+	): Promise<IsSubscribedResponseDto> {
+		const isSubscribed = await this.categoriesService.isSubscribed(
+			categoryId,
+			user.id,
+		);
+
+		return { isSubscribed };
 	}
 }

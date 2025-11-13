@@ -6,5 +6,6 @@ import { UserTokensService } from './user-tokens.service';
 @Module({
 	controllers: [NotificationsController],
 	providers: [NotificationsService, UserTokensService],
+	exports: [NotificationsService, UserTokensService],
 })
 export class NotificationsModule {}
