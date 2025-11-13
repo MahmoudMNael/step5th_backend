@@ -44,6 +44,14 @@ export class UserTokensService {
 		return tokens.map((t) => t.token);
 	}
 
+	async getAllTokens() {
+		const tokens = await prisma.deviceToken.findMany({
+			select: { token: true },
+		});
+
+		return tokens.map((t) => t.token);
+	}
+
 	async removeInvalidTokens(invalidTokens: string[]) {
 		return await prisma.deviceToken.deleteMany({
 			where: {

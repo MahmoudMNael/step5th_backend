@@ -22,11 +22,11 @@ export class NotificationsController {
 	) {}
 
 	@ApiResponse({
-		status: HttpStatus.CREATED,
+		status: HttpStatus.NO_CONTENT,
 	})
 	@UseGuards(JwtAuthGuard)
-	@HttpCode(HttpStatus.CREATED)
-	@Post()
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@Post('token')
 	async addToken(
 		@Body() body: CreateNotificationRequestDto,
 		@User() user: RequestUser,
@@ -39,7 +39,7 @@ export class NotificationsController {
 	})
 	@UseGuards(JwtAuthGuard)
 	@HttpCode(HttpStatus.NO_CONTENT)
-	@Delete()
+	@Delete('token')
 	async removeToken(@Body() body: CreateNotificationRequestDto) {
 		await this.userTokensService.removeToken(body.token);
 	}
