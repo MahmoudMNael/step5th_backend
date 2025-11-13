@@ -16,6 +16,7 @@ import { Language } from '@prisma/client';
 import { Response } from 'express';
 import { I18n, I18nContext } from 'nestjs-i18n';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { RequestUser, User } from '../auth/decorators/user.decorator';
 import { JwtAuthGuard } from '../auth/guards/auth.guard';
 import { Role, RolesGuard } from '../auth/guards/roles.guard';
 import { ResponseMessage } from '../shared/decorators/response_message.decorator';
@@ -117,5 +118,35 @@ export class CategoriesController {
 		@Body() body: UpdateCategoryRequestDto,
 	) {
 		return this.categoriesService.update(categoryId, body);
+	}
+
+	@ApiResponse({
+		status: HttpStatus.CREATED,
+	})
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(Role.USER, Role.SUBSCRIBER)
+	@HttpCode(HttpStatus.CREATED)
+	@ResponseMessage('Category notifications subscribed successfully!')
+	@Post(':categoryId/subscribe')
+	async subscribe(
+		@Param('categoryId') categoryId: number,
+		@User() user: RequestUser,
+	) {
+		await this.categoriesService.subscribe(categoryId, user.id);
+	}
+
+	@ApiResponse({
+		status: HttpStatus.CREATED,
+	})
+	@UseGuards(JwtAuthGuard, RolesGuard)
+	@Roles(Role.USER, Role.SUBSCRIBER)
+	@HttpCode(HttpStatus.CREATED)
+	@ResponseMessage('Category notifications unsubscribed successfully!')
+	@Post(':categoryId/unsubscribe')
+	async unsubscribe(
+		@Param('categoryId') categoryId: number,
+		@User() user: RequestUser,
+	) {
+		await this.categoriesService.unsubscribe(categoryId, user.id);
 	}
 }
