@@ -3,6 +3,7 @@ import {
 	Injectable,
 	NotFoundException,
 } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Role } from '../auth/guards/roles.guard';
 import { PaginationDto } from '../shared/dtos/pagination.dto';
 import prisma from '../shared/utils/prisma/client';
@@ -14,6 +15,8 @@ import {
 
 @Injectable()
 export class ArticlesService {
+	constructor(private readonly eventEmitter: EventEmitter2) {}
+
 	async create(body: CreateArticleThumbnailDto, authorId?: string) {
 		const article = await prisma.article.create({
 			data: {
@@ -25,6 +28,17 @@ export class ArticlesService {
 				authorId: authorId || null,
 				updatedById: authorId || null,
 			},
+		});
+
+		const category = await prisma.category.findUnique({
+			where: { id: article.categoryId },
+			select: { name: true },
+		});
+
+		this.eventEmitter.emit('article.posted', {
+			categoryId: article.categoryId,
+			categoryTitle: category!.name,
+			articleTitle: article.title,
 		});
 
 		return article;

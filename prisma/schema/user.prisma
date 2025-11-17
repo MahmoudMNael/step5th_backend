@@ -1,24 +1,26 @@
 model User {
-  id                  String             @id @default(cuid())
-  firstName           String             @map("first_name")
-  lastName            String             @map("last_name")
-  email               String             @unique
-  phoneNumber         String?            @map("phone_number")
-  password            String
-  salt                String
-  role                Role               @default(USER)
-  parentConnectionId  String?            @map("parent_connection_id")
-  createdAt           DateTime           @default(now()) @map("created_at")
-  updatedAt           DateTime           @updatedAt @map("updated_at")
-  ParentConnection    User?              @relation("UserConnection", fields: [parentConnectionId], references: [id], onDelete: SetNull)
-  ChildrenConnections User[]             @relation("UserConnection")
-  UserSubscriptions   UserSubscription[]
-  Orders              Order[]
-  Transactions        Transaction[]
-  UserWallets         UserWallet[]
-  Article             Article[]
-  UpdatedArticles     Article[]          @relation("ArticleUpdatedBy")
-  CashoutRequests     CashoutRequest[]
+  id                               String                             @id @default(cuid())
+  firstName                        String                             @map("first_name")
+  lastName                         String                             @map("last_name")
+  email                            String                             @unique
+  phoneNumber                      String?                            @map("phone_number")
+  password                         String
+  salt                             String
+  role                             Role                               @default(USER)
+  parentConnectionId               String?                            @map("parent_connection_id")
+  createdAt                        DateTime                           @default(now()) @map("created_at")
+  updatedAt                        DateTime                           @updatedAt @map("updated_at")
+  ParentConnection                 User?                              @relation("UserConnection", fields: [parentConnectionId], references: [id], onDelete: SetNull)
+  ChildrenConnections              User[]                             @relation("UserConnection")
+  UserSubscriptions                UserSubscription[]
+  Orders                           Order[]
+  Transactions                     Transaction[]
+  UserWallets                      UserWallet[]
+  Article                          Article[]
+  UpdatedArticles                  Article[]                          @relation("ArticleUpdatedBy")
+  CashoutRequests                  CashoutRequest[]
+  DeviceTokens                     DeviceToken[]
+  CategoryNotificationsSubscribers CategoryNotificationsSubscriber[]
 }
 
 model UserSubscription {
@@ -39,6 +41,17 @@ model UserWallet {
   balance   Float    @default(0.0)
   updatedAt DateTime @updatedAt @map("updated_at")
   User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model DeviceToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 enum Role {
